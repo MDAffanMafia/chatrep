@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -15,16 +14,28 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
 
+  // Check for existing login session on app load
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const handleLogin = (user) => {
     setUsername(user);
     setIsLoggedIn(true);
+    // Store username in localStorage for session persistence
+    localStorage.setItem('username', user);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUsername('');
+    // Clear localStorage on logout
+    localStorage.removeItem('username');
   };
-
 
   useEffect(() => {
     // Clear browser cache (best effort)
@@ -38,46 +49,11 @@ function App() {
       }
     };
 
-    // Unregister all service workers
-  /*  const unregisterServiceWorkers = () => {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          registrations.forEach((registration) => {
-            registration.unregister();
-          });
-        });
-      }
-    };
-
-    // Block DevTools shortcuts and right-click
-    const handleKeyDown = (e) => {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
-        (e.ctrlKey && e.key.toLowerCase() === 'u')
-      ) {
-        e.preventDefault();
-        alert('This action is restricted.');
-      }
-    };
-
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-    };
-*/
     clearCache();
-  /*  unregisterServiceWorkers();
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('contextmenu', handleContextMenu);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('contextmenu', handleContextMenu);
-    };*/
   }, []);
 
   if (!isLoggedIn) {
-    return <Login onLogin={() => handleLogin('Alex Parker')} />;
+    return <Login onLogin={handleLogin} />;
   }
 
   return (
