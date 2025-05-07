@@ -19,3 +19,19 @@ export const postLogin = async (uid, password) => {
     throw error; // Re-throw to allow component-level handling
   }
 };
+
+
+
+
+
+Uncaught Error
+    at f (history.ts:494:11)
+    at ge (components.tsx:429:3)
+    at Mi (react-dom-client.production.js:3502:21)
+    at Il (react-dom-client.production.js:6239:15)
+    at Ql (react-dom-client.production.js:7243:14)
+    at Qc (react-dom-client.production.js:10855:14)
+    at Kc (react-dom-client.production.js:10736:37)
+    at Gc (react-dom-client.production.js:10717:7)
+    at Lc (react-dom-client.production.js:10322:40)
+    at Ps (react-dom-client.production.js:11626:3)
