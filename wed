@@ -1,0 +1,128 @@
+api code
+
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'https://10.191.171.12:5443/PyPortal/',
+  timeout: 100000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export const postLogin = (uid,password) => {
+ const res =  api.post('EISHOME/newLogin/', {uid,password});
+        console.log(res);
+  return res;
+};
+
+
+component code
+import React, { useState,useEffect } from 'react';
+import '../styles/Login.css';
+import Header from './Header'; // Import Header
+import Footer from './Footer';
+import {postLogin} from "../api/loginApi";
+function Login({ onLogin }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [darkMode, setDarkMode] = useState(false); // for dark mode toggle in header
+
+const postLoginData = async () =>
+{
+ try {
+const res = await postLogin("2743582","password");
+console.log(res)
+}
+catch (error){
+ console.log(error)
+}
+};
+
+
+  useEffect(() => {
+    postLoginData();
+  }, []);
+
+
+
+
+   const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (username === 'admin' && password === 'admin') {
+      onLogin();
+    } else {
+      alert('Invalid credentials');
+    }
+  };
+
+  return (
+    <div className={darkMode ? 'dark-mode' : ''}>
+      <Header darkMode={darkMode} setDarkMode={setDarkMode} />
+      <div className="login-container">
+      <div className="bubble"></div>
+
+  <div className="bubble"></div>
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h2>Login</h2>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+      </div>
+       <Footer />
+    </div>
+
+
+  );
+}
+
+export default Login;
+
+
+
+django code
+@csrf_exempt
+def Login(request):
+    try:
+        if request.method == 'POST':
+            data_json=json.loads(request.body)
+            uid=data_json.get("uid")
+            password=data_json.get('password')
+            if not uid or not password:
+                return JsonResponse({"Response":"username or password is required","status":400},status=400,safe=False)
+            try:
+               user = Usermaster.objects.get(uid = uid,pwd = password)
+            except Exception as e:
+                return JsonResponse({"Response":"login Unsuccessfull","status":401},status=401,safe=False)
+            if user is not None:
+                request.session.set_expiry(3600)
+                request.session['username']=user.empname
+                request.session['level']=user.superlevel
+                if user.superlevel == 'L2':
+                    return JsonResponse({"Response":"login successfull","userLevel":"L2","status":302},status=302,safe=False)
+                return JsonResponse({"Response":"login successfull","userLevel":"L1","status":302},status=302,safe=False)
+            return JsonResponse({"Response":"login Unsuccessfull","status":401},status=401,safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error":"An error occured while performing login ","e":str(e)},status=500,safe=False)
+    return JsonResponse({"Response":"login successfull"},status=302,safe=False)
+
+
+
+
+
+
