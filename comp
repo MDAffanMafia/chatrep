@@ -20,15 +20,10 @@ function Login({ onLogin }) {
       const response = await postLogin(username, password);
       console.log('Login response:', response);
       
-      // Check the response status
+      // Check the response status from your Django backend
       if (response.data.status === 302) {
-        // Save user information to state or local storage if needed
-        const userLevel = response.data.userLevel;
-        localStorage.setItem('userLevel', userLevel);
-        localStorage.setItem('username', username);
-        
-        // Redirect based on successful login
-        onLogin(userLevel);
+        // Call parent component's onLogin function with username
+        onLogin(username);
       } else {
         setError('Invalid credentials');
       }
